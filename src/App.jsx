@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { drumPads } from "./Data";
+import "./Style.css";
 
 const App = () => {
   const [currentPad, setCurrentPad] = useState({ value: "...", name: "..." });
   const [powerState, setPowerState] = useState(false);
   const [notification, setNotification] = useState({
-    type: "...",
-    content: "..."
+    type: "",
+    content: ""
   });
 
+  //errors on notifications
   const POW_ERR = {
     type: "Power",
     content: "Power is off, you should click power switch to turn it on"
@@ -20,16 +22,17 @@ const App = () => {
   };
 
   const NO_NOTIF = {
-    type: "...",
-    content: "..."
+    type: "",
+    content: ""
   };
 
+  //control functions
   const handlePopups = (notif) => {
     setNotification(notif);
 
     setTimeout(() => {
       setNotification(NO_NOTIF);
-    }, 2000);
+    }, 3000);
   };
 
   const handleClick = (e) => {
@@ -54,14 +57,14 @@ const App = () => {
 
   return (
     <>
-      <div className="notification">
-        <p>{notification.type}</p>
-        <p>{notification.content}</p>
+      <div className={`notification ${notification.content != "" ? "active" : null}`}>
+        <p>Error type: {notification.type}</p>
+        <p>Error: {notification.content}</p>
       </div>
-      <div id="drum-machine" onKeyDown={handleKeyDown}>
+      <div id="drum-machine" onKeyDown={handleKeyDown} autoFocus>
         <div id="controls">
           <button onClick={() => setPowerState(!powerState)}>
-            {powerState ? "Off" : "On"}
+            Turn {powerState ? "Off" : "On"}
           </button>
         </div>
         <div id="display">
@@ -70,12 +73,12 @@ const App = () => {
         <div id="drum-pads">
           {drumPads.map((pad, i) => (
             <button
-              className="drum-pad"
+              className={currentPad === pad.value ? "drum-pad active" : "drum-pad"}
               id={pad.value}
               key={i}
               onClick={handleClick}
             >
-              {pad.name}
+              {pad.value}
             </button>
           ))}
         </div>

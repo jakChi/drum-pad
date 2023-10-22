@@ -1,6 +1,48 @@
+* {
+}
+
+.notification {
+  width: 40%; 
+  height: 15%;
+  position: absolute;
+  text-align: center;
+  opacity: 0;
+  transition: all 300ms ease;
+  border: 2px solid red;
+  border-radius: 15px;
+  background-color: black;
+  color: red;
+}
+
+.notification.active {
+  transform: translateY(10%);
+  opacity: 100%;
+}
+
 #drum-machine {
+  margin: auto;
+  width: 70%; 
+  height: 50%; 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border: 1px solid red;
 }
+
+#display {
+  width: 25%; 
+  text-align: center;
+}
+
+#drum-pads {
+  display: grid; 
+  grid-template-columns: repeat(3, auto);
+  gap: 10px;
+}
+
+/* mind ro roca davadgam pads borderi gauchndes */
+.drum-pad.active {
+  border: 1px solid red;
+}
+
