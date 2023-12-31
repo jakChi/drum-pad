@@ -10,7 +10,6 @@ const App = () => {
     content: "",
   });
 
-
   //errors on notifications
   const POW_ERR = {
     type: "Power",
@@ -27,7 +26,7 @@ const App = () => {
     content: "",
   };
 
-  //control functions
+  //controls popup notifications
   const handlePopups = (notif) => {
     setNotification(notif);
 
@@ -35,7 +34,6 @@ const App = () => {
       setNotification(NO_NOTIF);
     }, 3000);
   };
-
 
   //rogor gavushva audio roca buttonze davaklikeeeeeb
 
@@ -48,8 +46,14 @@ const App = () => {
         }
       }
       handlePopups(MACHINE_ERR);
-    } else if (powerState && e.type === "click") { 
-      setCurrentPad({ value: e.target.id, name: e.target.innerText });
+    } else if (powerState && e.type === "click") {
+      for (let i = 0; i < drumPads.length; i++) {
+        let currentPad = drumPads[i];
+        if (e.target.innerText === currentPad.value) {
+          setCurrentPad({ value: currentPad.value, name: currentPad.name });
+          break;
+        }
+      }
     } else {
       handlePopups(POW_ERR);
     }
@@ -67,8 +71,13 @@ const App = () => {
       </div>
       <div id="drum-machine" onKeyDown={handlePlay} autoFocus>
         <div id="controls">
-          <button onClick={() => setPowerState(!powerState)}>
-            Turn {powerState ? "Off" : "On"}
+          <button
+            className={powerState ? "powBtn clicked" : "powBtn"}
+            onClick={() => setPowerState(!powerState)}
+          >
+            <i
+              className={`${powerState ? "on" : "off"} fa-solid fa-power-off`}
+            ></i>
           </button>
         </div>
         <div id="drum-pads">
@@ -85,8 +94,10 @@ const App = () => {
             </button>
           ))}
         </div>
-        <div id="display">
-          {currentPad.value}-{currentPad.name}
+        <div id="display" className={powerState ? "onDisplay" : "offDisplay"}>
+          <h3>pad value: {currentPad.value}</h3>
+          <br />
+          <h3>pad name: {currentPad.name}</h3>
         </div>
       </div>
     </>
