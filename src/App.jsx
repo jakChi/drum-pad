@@ -3,7 +3,11 @@ import { drumPads } from "./Data";
 import "./Style.css";
 
 const App = () => {
-  const [currentPad, setCurrentPad] = useState({ value: "...", name: "..." });
+  const [currentPad, setCurrentPad] = useState({
+    value: null,
+    name: null,
+    audioUrl: null,
+  });
   const [powerState, setPowerState] = useState(false);
   const [notification, setNotification] = useState({
     type: "",
@@ -32,16 +36,23 @@ const App = () => {
 
     setTimeout(() => {
       setNotification(NO_NOTIF);
-    }, 3000);
+    }, 4000);
   };
 
   //rogor gavushva audio roca buttonze davaklikeeeeeb
+
+  const handlePowerState = () => {
+    setPowerState(!powerState);
+    setCurrentPad({ value: null, name: null });
+  };
 
   const handlePlay = (e) => {
     if (powerState && e.type === "keydown") {
       for (let i = 0; i < drumPads.length; i++) {
         if (e.key.toUpperCase() === drumPads[i].value) {
           setCurrentPad({ value: drumPads[i].value, name: drumPads[i].name });
+          const audio = new Audio(drumPads[i].audioUrl);
+          audio.play();
           return;
         }
       }
@@ -49,9 +60,12 @@ const App = () => {
     } else if (powerState && e.type === "click") {
       for (let i = 0; i < drumPads.length; i++) {
         let currentPad = drumPads[i];
+
         if (e.target.innerText === currentPad.value) {
           setCurrentPad({ value: currentPad.value, name: currentPad.name });
-          break;
+          const audio = new Audio(currentPad.audioUrl);
+          audio.play();
+          return;
         }
       }
     } else {
@@ -70,10 +84,14 @@ const App = () => {
         <p>Error: {notification.content}</p>
       </div>
       <div id="drum-machine" onKeyDown={handlePlay} autoFocus>
+        <div className={`${powerState ? "onDot" : "offDot"} dot1`}></div>
+        <div className={`${powerState ? "onDot" : "offDot"} dot2`}></div>
+        <div className={`${powerState ? "onDot" : "offDot"} dot3`}></div>
+        <div className={`${powerState ? "onDot" : "offDot"} dot4`}></div>
         <div id="controls">
           <button
             className={powerState ? "powBtn clicked" : "powBtn"}
-            onClick={() => setPowerState(!powerState)}
+            onClick={() => handlePowerState()}
           >
             <i
               className={`${powerState ? "on" : "off"} fa-solid fa-power-off`}
@@ -84,7 +102,7 @@ const App = () => {
           {drumPads.map((pad, i) => (
             <button
               className={
-                currentPad === pad.value ? "drum-pad active" : "drum-pad"
+                currentPad.value === pad.value ? "drum-pad active" : "drum-pad"
               }
               id={pad.value}
               key={i}
