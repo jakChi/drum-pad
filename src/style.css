@@ -120,10 +120,6 @@
   color: #ff0000;
 }
 
-.drum-pad {
-  
-}
-
 .active {
   transform: scale(90%);
   background-color: cyan;
@@ -133,11 +129,11 @@
 
 #display {
   margin: auto;
-  width: 90%;
+  width: 60%;
   height: 15%;
-  color: #7209b7;
   border-radius: 10px;
   text-align: center;
+  font-size: 10px;
   transition: all 800ms ease;
   transition-delay: 500ms;
   display: flex;
@@ -148,16 +144,21 @@
 
 #display > * {
   border: 2px solid;
+  padding: 0.5em;
   width: 40%;
+  height: 60%;
   border-radius: 5px;
+  background-color: #000814;
 }
 
 .onDisplay {
   background-color: #ffc300;
+  color: #ffc300;
   box-shadow: 0 0 10px 2px #ffc300;
 }
 .offDisplay {
   background-color: #000814;
+  color: transparent;
 }
 
 #drum-pads {

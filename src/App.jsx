@@ -3,69 +3,64 @@ import { drumPads } from "./Data";
 import "./Style.css";
 
 const App = () => {
-  const [currentPad, setCurrentPad] = useState({
-    value: null,
-    name: null,
-    audioUrl: null,
-  });
+  const [currentPad, setCurrentPad] = useState({});
   const [powerState, setPowerState] = useState(false);
-  const [notification, setNotification] = useState({
-    type: "",
-    content: "",
-  });
+  const [notification, setNotification] = useState(null);
 
-  //errors on notifications
+  //errors
   const POW_ERR = {
     type: "Power",
     content: "Power is off, you should click power switch to turn it on",
   };
 
-  const MACHINE_ERR = {
-    type: "Pad error",
-    content: "Wrong key, you sould try one of this keys QWEASDZXC",
+  const TURN_ON = {
+    type: "power",
+    content: "Power On!",
   };
 
-  const NO_NOTIF = {
-    type: "",
-    content: "",
+  const TURN_OFF = {
+    type: "power",
+    content: "Power Off!",
   };
 
   //controls popup notifications
   const handlePopups = (notif) => {
     setNotification(notif);
-
     setTimeout(() => {
-      setNotification(NO_NOTIF);
-    }, 4000);
+      setNotification(null);
+    }, 3000);
   };
 
-  //rogor gavushva audio roca buttonze davaklikeeeeeb
-
+  //controls power state
   const handlePowerState = () => {
     setPowerState(!powerState);
     setCurrentPad({ value: null, name: null });
+    powerState ? handlePopups(TURN_OFF) : handlePopups(TURN_ON);
   };
 
-  const handlePlay = (e) => {
-    if (powerState && e.type === "keydown") {
+  const handleClick = (event, key) => {
+    if (powerState) {
       for (let i = 0; i < drumPads.length; i++) {
-        if (e.key.toUpperCase() === drumPads[i].value) {
-          setCurrentPad({ value: drumPads[i].value, name: drumPads[i].name });
-          const audio = new Audio(drumPads[i].audioUrl);
+        if (key === drumPads[i].keyTrigger) {
+          setCurrentPad(drumPads[i]);
+          const audio = document.getElementById(key);
           audio.play();
-          return;
+          break;
         }
       }
-      handlePopups(MACHINE_ERR);
-    } else if (powerState && e.type === "click") {
-      for (let i = 0; i < drumPads.length; i++) {
-        let currentPad = drumPads[i];
+    } else {
+      handlePopups(POW_ERR);
+    }
+  };
 
-        if (e.target.innerText === currentPad.value) {
-          setCurrentPad({ value: currentPad.value, name: currentPad.name });
-          const audio = new Audio(currentPad.audioUrl);
+  const handleKeyDown = (event) => {
+    if (powerState) {
+      for (let i = 0; i < drumPads.length; i++) {
+        if (event.keyCode === drumPads[i].keyCode) {
+          setCurrentPad(drumPads[i]);
+          const audio = document.getElementById(event.key.toUpperCase());
           audio.play();
-          return;
+          break;
         }
       }
     } else {
@@ -75,15 +70,13 @@ const App = () => {
 
   return (
     <>
-      <div
-        className={`notification ${
-          notification.content != "" ? "active" : null
-        }`}
-      >
-        <p>Error type: {notification.type}</p>
-        <p>Error: {notification.content}</p>
-      </div>
-      <div id="drum-machine" onKeyDown={handlePlay} autoFocus>
+      {notification ? (
+        <div className="notification">
+          <h2>Type: {notification.type}</h2>
+          <p>{notification.content}</p>
+        </div>
+      ) : null}
+      <div id="drum-machine" onKeyDown={handleKeyDown} autoFocus>
         <div className={`${powerState ? "onDot" : "offDot"} dot1`}></div>
         <div className={`${powerState ? "onDot" : "offDot"} dot2`}></div>
         <div className={`${powerState ? "onDot" : "offDot"} dot3`}></div>
@@ -93,29 +86,33 @@ const App = () => {
             className={powerState ? "powBtn clicked" : "powBtn"}
             onClick={() => handlePowerState()}
           >
-            <i
-              className={`${powerState ? "on" : "off"} fa-solid fa-power-off`}
-            ></i>
+            {powerState ? (
+              <div className="on">&#x23FD;</div>
+            ) : (
+              <div className="off">&#x2B58;</div>
+            )}
           </button>
         </div>
         <div id="drum-pads">
           {drumPads.map((pad, i) => (
             <button
               className={
-                currentPad.value === pad.value ? "drum-pad active" : "drum-pad"
+                currentPad.keyTrigger === pad.keyTrigger
+                  ? "drum-pad active"
+                  : "drum-pad"
               }
-              id={pad.value}
+              id={pad.id}
               key={i}
-              onClick={handlePlay}
+              onClick={() => handleClick(event, pad.keyTrigger)}
             >
-              {pad.value}
+              <audio src={pad.url} className="clip" id={pad.keyTrigger}></audio>
+              {pad.keyTrigger}
             </button>
           ))}
         </div>
         <div id="display" className={powerState ? "onDisplay" : "offDisplay"}>
-          <h3>pad value: {currentPad.value}</h3>
-          <br />
-          <h3>pad name: {currentPad.name}</h3>
+          <h3>pad key: {currentPad.keyTrigger}</h3>
+          <h3>pad name: {currentPad.id}</h3>
         </div>
       </div>
     </>
